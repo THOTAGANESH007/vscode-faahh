@@ -1,14 +1,17 @@
 {
-  "name": "faahh-sound",
-  "displayName": "Audible Action Feedback",
-  "description": "Enhances workflow by playing an audible notification sound during file saves and debug session starts.",
+  "name": "action-audio-thala",
+  "displayName": "Action Audio thala",
+  "description": "Provides audible notifications for common editor events such as saving files and starting debug sessions.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.110.0"
   },
-  "icon": "assets/icon.jpeg",
+  "icon": "assets/icon.png",
   "publisher": "THOTAGANESH007",
   "license": "MIT",
+  "categories": [
+    "Other"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/THOTAGANESH007/vscode-faahh"
@@ -17,11 +20,11 @@
     "sound",
     "audio",
     "save",
-    "notification"
-  ],
-  "categories": [
-    "Utilities",
-    "Other"
+    "notification",
+    "debug",
+    "feedback",
+    "fun",
+    "entertainment"
   ],
   "activationEvents": [
     "onStartupFinished"
