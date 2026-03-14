@@ -39,10 +39,16 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableCommand);
 
   // 2. Listen for ANY file being saved
-  let disposableSave = vscode.workspace.onDidSaveTextDocument(() => {
-    playFaahhSound();
-  });
-  context.subscriptions.push(disposableSave);
+  // Check Auto Save setting
+  const config = vscode.workspace.getConfiguration("files");
+  const autoSave = config.get<string>("autoSave");
+
+  if (autoSave === "off") {
+    let disposableSave = vscode.workspace.onDidSaveTextDocument(() => {
+      playFaahhSound();
+    });
+    context.subscriptions.push(disposableSave);
+  }
 
   // 3. Listen for a Run/Debug session starting
   let disposableRun = vscode.debug.onDidStartDebugSession(() => {
