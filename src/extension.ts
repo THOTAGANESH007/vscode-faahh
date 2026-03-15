@@ -2,55 +2,48 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 
-const player = require("play-sound")();
+// Use sound-play for silent background playback on Windows
+const sound = require("sound-play");
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("Faahh Sound extension is active!");
+  console.log("Action Audio Thala is active!");
 
   function playFaahhSound() {
     const audioPath = path.join(context.extensionPath, "assets", "faahh.wav");
+
     if (!fs.existsSync(audioPath)) {
-      console.error("ERROR: Sound file not found at ->", audioPath);
-      vscode.window.showErrorMessage(
-        "Faahh sound file not found! Check developer console.",
-      );
       return;
     }
 
-    console.log("Playing sound from:", audioPath);
-
-    // Play the sound
-    player.play(audioPath, (err: any) => {
-      if (err && !err.killed) {
-        console.error("Could not play sound. Error:", err);
-        vscode.window.showErrorMessage(`Audio Error: ${err}`);
-      }
+    sound.play(audioPath).catch((err: any) => {
+      console.error("Playback error:", err);
     });
   }
 
-  // 1. Listen for the keyboard shortcut / command palette
+  // 1. Manual Command
   let disposableCommand = vscode.commands.registerCommand(
     "faahh-sound.play",
     () => {
       playFaahhSound();
-      vscode.window.showInformationMessage("Faahh!");
+      vscode.window.showInformationMessage("Thala Feedback Played!");
     },
   );
   context.subscriptions.push(disposableCommand);
 
-  // 2. Listen for ANY file being saved
-  // Check Auto Save setting
-  const config = vscode.workspace.getConfiguration("files");
-  const autoSave = config.get<string>("autoSave");
+  // 2. Save Listener (Moved the check inside the function)
+  let disposableSave = vscode.workspace.onDidSaveTextDocument(() => {
+    const config = vscode.workspace.getConfiguration("files");
+    const autoSave = config.get<string>("autoSave");
 
-  if (autoSave === "off") {
-    let disposableSave = vscode.workspace.onDidSaveTextDocument(() => {
+    // Only play sound if Auto Save is OFF.
+    // This prevents the sound from playing every 1 second if they have auto-save on.
+    if (autoSave === "off") {
       playFaahhSound();
-    });
-    context.subscriptions.push(disposableSave);
-  }
+    }
+  });
+  context.subscriptions.push(disposableSave);
 
-  // 3. Listen for a Run/Debug session starting
+  // 3. Debug Listener
   let disposableRun = vscode.debug.onDidStartDebugSession(() => {
     playFaahhSound();
   });
